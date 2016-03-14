@@ -38,7 +38,7 @@ def logout():
 @app.route('/')
 @app.route('/home')
 def home():
-    if g.user == 'guest':
+    if g.user.nickname == 'guest':
         logout_user()
     return render_template('home.html',
                            title = 'NBA Work Home')
