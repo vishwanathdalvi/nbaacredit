@@ -1,0 +1,42 @@
+<!-- extends base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1> Hi Guest! </h1>
+    {% if not examsession %}
+        <p>  {{ welcometext }} </p>
+        <p>  To go back: <input type="button" onclick="location.href='{{url_for('home') }}';" value="BACK" /> </p>
+        {% for i in range(nexamsessions) %}
+            <p> <input type="button" onclick="location.href='{{url_for('guest',examsession=i) }}';" value="{{ get_examsession(i) }}" /> </p>
+        {% endfor %}
+    {% else %}
+        {% if not classname %}
+            <p> {{ welcometext }} </p>
+            <p>  To go back: <input type="button" onclick="location.href='{{url_for('guest') }}';" value="BACK" /> </p>
+            {% for classname in classlist %}
+                <p> <input type="button" onclick="location.href='{{url_for('guest',examsession=iexamsession, classname=classname) }}';" value="{{ classname }}" /> </p>                
+            {% endfor %}
+        {% else %}
+            <p> {{ welcometext }} </p>
+            <p>  To go back: <input type="button" onclick="location.href='{{url_for('guest',examsession=copos[0].examsession) }}';" value="BACK" /> </p>
+            <table>
+            {% for i in range(copos.count()) %}
+                <tr>
+                <td align="right"><b>{{'%4d'%(i+1)}}</b></td>
+                <td>{{'%10s'%(copos[i].coursecode)}}</td>
+                <td>{{'%5s'%(copos[i].classname)}}</td>
+                <td width=300> <i>{{copos[i].coursename}}</i></td>
+                <td> {{get_examsession(copos[i].examsession) }}</td>
+                <td> <a href = "{{ url_for('copopreview', uniqueID = copos[i].uniqueID) }}">Preview</a></td>
+                <td> >>> </td>
+                {% if copos[i].bool_done == 1 %}
+                    <td>            DONE</td>
+                {% else %}
+                    <td>        NOT DONE</td>
+                {% endif %}
+                </td> 
+                </tr>
+            {% endfor %}
+            </table> 
+        {% endif %}
+    {% endif %}
+{% endblock %}

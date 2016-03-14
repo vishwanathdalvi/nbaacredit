@@ -1,0 +1,53 @@
+<!-- extends base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1> Course Outcomes Form </h1>
+    <form action="" method="post" name="copoform">
+    {{ form.hidden_tag() }}
+    <table>
+        <tr>
+            <td> Course Code: </td>
+            <td> {{ form.coursecode(size=24) }} </td>
+        </tr>
+        <tr>
+            <td> Course Name: </td>
+            <td> {{ form.coursename(size=24) }} </td>
+        </tr>
+        <tr>
+            <td> Faculty Name (as in ICT email e.g. aw.patwardhan): </td>
+            <td> {{ form.facultyname_1(size=24) }} </td>
+        </tr>
+        <tr>
+            <td> Second Faculty Name (if any): </td>
+            <td> {{ form.facultyname_2(size=24) }} </td>
+        </tr>
+        <tr>
+            <td> Third Faculty Name (if any): </td>
+            <td> {{ form.facultyname_3(size=24) }} </td>
+        </tr>
+        <tr>
+            <td> Fourth Faculty Name (if any): </td>
+            <td> {{ form.facultyname_4(size=24) }} </td>
+        </tr>
+        <tr>
+            <td> Exam Session: </td>
+            <td> {{ form.examsession }} </td>
+        </tr>        
+    </table>
+    <p><b>Course Coutcomes:</b> Students would be able to: </p>
+    <table>
+        <tr>
+            <td> <b>Sr.No.</b> </td>
+            <td> <b>Course Outcome Description</b> </td>
+            <td> <b>K-level</b> </td>
+        </tr>    
+        <tr><td><b>1</b></td><td>{{form.courseoutcome_1(size=300) }}</td><td>{{ form.outcomeKlevel_1 }}</td></tr>
+        <tr><td><b>2</b></td><td>{{form.courseoutcome_2(size=300) }}</td><td>{{ form.outcomeKlevel_2 }}</td></tr>
+        <tr><td><b>3</b></td><td>{{form.courseoutcome_3(size=300) }}</td><td>{{ form.outcomeKlevel_3 }}</td></tr>
+        <tr><td><b>4</b></td><td>{{form.courseoutcome_4(size=300) }}</td><td>{{ form.outcomeKlevel_4 }}</td></tr>
+        <tr><td><b>5</b></td><td>{{form.courseoutcome_5(size=300) }}</td><td>{{ form.outcomeKlevel_5 }}</td></tr>
+        <tr><td><b>6</b></td><td>{{form.courseoutcome_6(size=300) }}</td><td>{{ form.outcomeKlevel_6 }}</td></tr>
+    </table>
+        
+    </form>
+{% endblock %}

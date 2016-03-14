@@ -1,0 +1,8 @@
+<!-- extends base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1> Welcome to NBA Accreditation! </h1>
+    <p> To log-in and get straight to work click here: <input type="button" onclick="location.href='{{url_for('index') }}';" value="User Menu" /> </p>
+
+    <p> To just browse, you can log in as a guest (no editing privileges) here: <input type="button" onclick="location.href='{{url_for('guest') }}';" value="Guest Menu" /> </p>
+{% endblock %}

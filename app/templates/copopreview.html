@@ -1,0 +1,126 @@
+<!-- extends base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1> Course Outcomes Form </h1>
+    
+    
+    {% if user.nickname != "guest" %}
+        <p> Welcome {{ user.nickname }}!  This is the form as you last left it.</p>
+        <p> To go back to the User Menu, click on: <input type="button" onclick="location.href='{{url_for('user',nickname = user.nickname)}}';" value="BACK" /> </p>
+        <p> If you would like to make changes, click on: <input type="button" onclick="location.href='{{url_for('copoform',uniqueID = copo.uniqueID)}}';" value="EDIT" /> </p>    
+    {% else %}
+        <p> This is the form as the Point Faculty last left it. If you want to suggest changes, please contact the Point Faculty or the administrator </p>
+        <p> The Point Faculty for this form is <b>{{ copo.pointfaculty }}</b> </p>
+        <p> To go back to the User Menu, click on: <input type="button" onclick="location.href='{{url_for('guest',examsession=copo.examsession,classname=copo.classname)}}';" value="BACK" /> </p>
+
+    {% endif %}
+
+    <form action="" method="post" name="copoform">
+    {{ form.hidden_tag() }}
+    {% if user.nickname != "guest" %}
+    <p> If you are happy with the information in this form, click: <input type="submit" value="DONE"/> </p>              
+    {% endif %}
+    <table>
+        <tr>
+            <td> Course Code: </td>
+            <td> <b>{{ copo.coursecode }}</b> </td>
+        </tr>
+        <tr>
+            <td> Course Name: </td>
+            <td> {{ copo.coursename }} </td>
+        </tr>
+
+        <tr>
+            <td> Class: </td>
+            <td> {{ copo.classname }} </td>
+        </tr>
+
+        <tr>
+            <td> Faculty: </td>
+            <td> {{ copo.facultyname_1 }}; {{ copo.facultyname_2 }}; {{ copo.facultyname_3 }}; {{ copo.facultyname_4 }} </td>
+        </tr>
+        <tr>
+            <td> Exam Session: </td>
+            <td> <b>{{ get_examsession(copo.examsession) }}</b> </td>
+        </tr>   
+        <tr><td> -------- </td></tr>
+        <tr> 
+            <td> <b>Last Modified On:</b> </td>
+            <td> {{ copo.whenmodified }} </td>
+            <td> <b>Point Faculty: </b> </td>
+            <td> {{ copo.pointfaculty }} </td>  
+        </tr>
+        <tr>
+            <td> <b>Last Modified By:</b> </td>
+            <td> {{ copo.whomodified }} </td>
+        </tr> 
+        <tr><td> -------- </td></tr>
+    </table>
+
+    <p><b>Course Coutcomes:</b> At the end of the course students should be able to: </p>
+
+    <table>
+        <tr>
+            <td></td><td></td>
+            <td> Course Outcome Description <i>(Max 300 Characters)</i> </td><td></td><td></td><td>K-level</td> 
+        </tr> 
+        {% for (i, courseoutcome, klevel) in courseOutcomeKlevel %}   
+            <tr>
+                <td></td> <td><b>{{ i }}</b></td> 
+                <td>{{ courseoutcome.data }}</td> 
+                <td></td> <td></td>
+                <td> {{ get_Klevel(klevel.data) }} </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <p><b>CO - PO Correlation:</b>
+         Please state how well each course outcome (CO) correlates with each program outcome (PO) </p>
+           <p> <b>S:</b> <i>Strong correlation</i>  <b>M:</b><i> Medium Correlation </i>  
+                 <b>W:</b> <i>Weak Correlation  </i>  <b>N:</b><i> No correlation     </i> </p>
+    <table>
+        <tr>
+            <td>.</td>
+            {% for j in range(nprogramoutcomes) %}
+                <td> <b>{{ "PO%d"%(j+1) }}</b></td>
+            {% endfor %}
+        </tr>
+        {% for i in range(ncourseoutcomes) %}
+        <tr>
+            <td><b> {{ "CO%d"%(i+1) }} </b></td>
+            {% for j in range(nprogramoutcomes) %}
+                <td align="center"> {{ form.copotable.entries[i].coporow.entries[j].copocorr.data }} </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p><b> Question-wise CO weightage </b></p>
+    <table>
+        <tr>
+            <td width=80>.</td>
+            <td width=30><b>Marks Assigned (Absolute)</b></td>
+            {% for i in range(ncourseoutcomes) %}
+                <td width=5><b> {{ "CO%d"%(i+1) }}(%) </b></td>
+            {% endfor %}
+            <td width=30><b>Target Marks (%)</b></td>
+        </tr>
+        {% for i in range(nquestions) %}
+            <tr> 
+                <td width=80 align="right"> Question {{i+1}} </td> 
+                <td width=30 align="center"> {{ form.coqtable.entries[i].marksassigned.data }} </td>
+                
+                {% for j in range(ncourseoutcomes) %}
+                    <td align="center"> {{ form.coqtable.entries[i].coqrow.entries[j].coqcorr.data }}</td> 
+                {% endfor %}
+                <td width=30 align="center"> {{ form.coqtable.entries[i].targetmarks.data }} </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td> <b>Additional Information:</b> </td>
+            <td> {{ form.description.data }} </td>
+        </tr>
+
+    </table>
+            
+    </form>
+{% endblock %}

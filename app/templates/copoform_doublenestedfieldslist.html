@@ -1,0 +1,90 @@
+<!-- extends base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1> Course Outcomes Form </h1>
+    <form action="" method="post" name="copoform">
+    <table>
+        <tr>
+            <td> Course Code: </td>
+            <td> <b>{{ copo.coursecode }}</b> </td>
+        </tr>
+        <tr>
+            <td> Course Name: </td>
+            <td> {{ copo.coursename }} </td>
+        </tr>
+
+        <tr>
+            <td> Class: </td>
+            <td> {{ copo.classname }} </td>
+        </tr>
+
+        <tr>
+            <td> Faculty: </td>
+            <td> {{ copo.facultyname_1 }} </td>
+            <td> {{ copo.facultyname_2 }} </td>
+            <td> {{ copo.facultyname_3 }} </td>
+            <td> {{ copo.facultyname_4 }} </td>
+        </tr>
+        <tr>
+            <td> Exam Session: </td>
+            <td> <b>{{ get_examsession(copo.examsession) }}</b> </td>
+        </tr>   
+        <tr><td> -------- </td></tr>
+        <tr> 
+            <td> Last Modified On: </td>
+            <td> {{ copo.whenmodified }} </td>
+            <td> Last Modified By: </td>
+            <td> {{ copo.whomodified }} </td>  
+        </tr> 
+        <tr><td> -------- </td></tr>
+    </table>
+    <p><b>Course Coutcomes:</b> At the end of the course students should be able to: </p>
+
+    <table>
+        <tr>
+            <td></td><td></td>
+            <td> Course Outcome Description <i>(Max 300 Characters)</i> </td><td></td><td></td> 
+        </tr> 
+        {% for (i, courseoutcome, klevel) in courseOutcomeKlevel %}   
+            <tr>
+                <td></td> <td><b>{{ i }}</b></td> 
+                <td>{{ courseoutcome(cols="80", rows="2"|safe) }}</td> 
+                <td></td> <td></td>
+                <td> <label>K-level</label>  {{ klevel(default=klevel.data) }} </td>
+                {% for error in klevel.errors %}
+                    <td> <span style = "color:red;">[{{ error }}] </span> </td>
+                {% endfor %}
+            </tr>
+            {% for error in courseoutcome.errors %}
+                   <tr> <span style = "color:red;">[{{ error }}] </span> </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+
+    <p><b> CO - PO Correlation </b></p>
+
+    <table>
+        <tr>
+            <td>..</td>
+            {% for j in range(nprogramoutcomes) %}
+                <td> <b>{{ "PO%d"%(j+1) }}</b></td>
+            {% endfor %}
+        </tr>
+        {% for i in range(ncourseoutcomes) %}
+        <tr>
+            <td><b> {{ "CO%d"%(i+1) }} </b></td>
+            {% for cell in form.copotable.entries[i].coporow.entries %}
+                <td> {{ cell.copocorr.data(size=3) }} </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <table>
+        <tr>
+            <td> <input type="submit" value="Save Changes"> </td> 
+        </tr>
+    </table>
+        
+    </form>
+{% endblock %}

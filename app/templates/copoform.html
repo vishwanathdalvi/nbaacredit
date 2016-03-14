@@ -1,0 +1,135 @@
+<!-- extends base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1> Course Outcomes Form </h1>
+    <p> You can save yourself some time by copying course-outcome and CO-PO mapping data from another form you may have filled.</p>
+    <p> Just click here: <input type="button" onclick="location.href='{{url_for('copy_select',uniqueID = copo.uniqueID)}}';" value="COPY" />
+    <form action="" method="post" name="copoform">
+    {{ form.hidden_tag() }}
+    <table>
+        <tr>
+            <td> Course Code: </td>
+            <td> <b>{{ copo.coursecode }}</b> </td>
+        </tr>
+        <tr>
+            <td> Course Name: </td>
+            <td> {{ copo.coursename }} </td>
+        </tr>
+
+        <tr>
+            <td> Class: </td>
+            <td> {{ copo.classname }} </td>
+        </tr>
+
+        <tr>
+            <td> Faculty: </td>
+            <td> {{ copo.facultyname_1 }} </td>
+            <td> {{ copo.facultyname_2 }} </td>
+            <td> {{ copo.facultyname_3 }} </td>
+            <td> {{ copo.facultyname_4 }} </td>
+        </tr>
+        <tr>
+            <td> Exam Session: </td>
+            <td> <b>{{ get_examsession(copo.examsession) }}</b> </td>
+        </tr>   
+        <tr><td> -------- </td></tr>
+        <tr> 
+            <td> Last Modified On: </td>
+            <td> {{ copo.whenmodified }} </td>
+            <td> Last Modified By: </td>
+            <td> {{ copo.whomodified }} </td>  
+        </tr> 
+        <tr><td> -------- </td></tr>
+    </table>
+    <p><b>Course Coutcomes:</b> At the end of the course students should be able to: </p>
+
+    <table>
+        <tr>
+            <td></td><td></td>
+            <td> Course Outcome Description <i>(Max 300 Characters)</i> </td><td></td><td></td> 
+        </tr> 
+        {% for (i, courseoutcome, klevel) in courseOutcomeKlevel %}   
+            <tr>
+                <td></td> <td><b>{{ i }}</b></td> 
+                <td>{{ courseoutcome(cols="80", rows="2"|safe) }}</td> 
+                <td></td> <td></td>
+                <td> <label>K-level</label>  {{ klevel(default=klevel.data) }} </td>
+                {% for error in klevel.errors %}
+                    <td> <span style = "color:red;">[{{ error }}] </span> </td>
+                {% endfor %}
+            </tr>
+            {% for error in courseoutcome.errors %}
+                   <tr> <span style = "color:red;">[{{ error }}] </span> </tr>
+            {% endfor %}
+        {% endfor %}
+    </table>
+    <p><b>CO - PO Correlation:</b>
+         Please state how well each course outcome (CO) correlates with each program outcome (PO) </p>
+           <p> <b>S:</b> <i>Strong correlation</i>  <b>M:</b><i> Medium Correlation </i>  
+                 <b>W:</b> <i>Weak Correlation  </i>  <b>N:</b><i> No correlation     </i> </p>
+    <table>
+        <tr>
+            <td>.</td>
+            {% for j in range(nprogramoutcomes) %}
+                <td> <b>{{ "PO%d"%(j+1) }}</b></td>
+            {% endfor %}
+        </tr>
+        {% for i in range(ncourseoutcomes) %}
+        <tr>
+            <td><b> {{ "CO%d"%(i+1) }} </b></td>
+            {% for j in range(nprogramoutcomes) %}
+                <td> {{ form.copotable.entries[i].coporow.entries[j].copocorr(size=1) }} </td>
+                {% for error in form.copotable.entries[i].coporow.entries[j].copocorr.errors %}
+                    <td> <span style = "color:red;">[{{ error }}] </span> </td>
+                {% endfor %}
+
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p><b> Question-wise CO weightage </b></p>
+    <table>
+        <tr>
+            <td width=80>.</td>
+            <td width=30><b>Marks Assigned (Absolute)</b></td>
+            {% for i in range(ncourseoutcomes) %}
+                <td width=5><b> {{ "CO%d"%(i+1) }}(%) </b></td>
+            {% endfor %}
+            <td width=30><b>Target Marks (%)</b></td>
+        </tr>
+        {% for i in range(nquestions) %}
+            <tr> 
+                <td width=80 align="right"> Question {{i+1}} </td> 
+                <td width=30 align="right"> {{ form.coqtable.entries[i].marksassigned }} </td>
+                {% for error in form.coqtable.entries[i].marksassigned.errors %}
+                    <td> <span style = "color:red;">[{{ error }}] </span> </td>
+                {% endfor %}
+                
+                {% for j in range(ncourseoutcomes) %}
+                    <td> {{ form.coqtable.entries[i].coqrow.entries[j].coqcorr(size=2) }}</td> 
+                    {% for error in form.coqtable.entries[i].coqrow.entries[j].coqcorr.errors %}
+                        <td> <span style = "color:red;">[{{ error }}] </span> </td>
+                    {% endfor %}                
+                {% endfor %}
+                <td width=30 align="right"> {{ form.coqtable.entries[i].targetmarks }} </td>
+                   {% for error in form.coqtable.entries[i].targetmarks.errors %}
+                        <td> <span style = "color:red;">[{{ error }}] </span> </td>
+                    {% endfor %}
+ 
+            </tr>
+        {% endfor %}
+
+    </table>
+    <p> Please submit additional information/remarks/comments in the box below <i>(max 300 characters)</i> </p>
+    <table>
+        <tr>
+            <td> {{ form.description(cols="80", rows="2"|safe) }} </td>
+        </tr>
+        <tr>
+            <td> <input type="submit" value="Save Changes"> </td> 
+        </tr>
+    </table>
+        
+    </form>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+    <h1> Copy Template Menu </h1>
+    <p> Hi {{user.nickname}}!  Here are your forms.</p>  
+    <p> Click on the "COPY" link next to the form you want to copy to copy its COs and CO-PO map to your current form. </p>
+    <p> Save yourself some time! </p>
+    <table>
+    {% for i in range(ncopo) %}
+        <tr>
+        <td align="right"><b>{{'%4d'%(i+1)}}</b></td>
+        <td>{{'%10s'%(copos[i].coursecode)}}</td>
+        <td>{{'%5s'%(copos[i].classname)}}</td>
+        <td width=300> <i>{{copos[i].coursename}}</i></td>
+        <td> {{get_examsession(copos[i].examsession) }}</td>
+        <td> <a href = "{{ url_for('copy_execute', uniqueID = uniqueID, template_uniqueID=copos[i].uniqueID) }}">COPY</a></td>
+        <td> >>> </td>
+        {% if copos[i].bool_done == 1 %}
+            <td>            DONE</td>
+        {% else %}
+            <td>        NOT DONE</td>
+        {% endif %}
+        </td> 
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

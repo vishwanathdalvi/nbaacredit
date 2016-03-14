@@ -1,0 +1,27 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+    <h1> User Menu </h1>
+    <p> Hi {{user.nickname}}!  Here are the forms you should fill out.  It should not take more than a couple of hours.  And thanks :) </p>
+    <p> Please make sure to use the "COPY" feature to save yourself a lot of time!</p>
+    <table>
+    {% for i in range(ncopo) %}
+        <tr>
+        <td align="right"><b>{{'%4d'%(i+1)}}</b></td>
+        <td>{{'%10s'%(copos[i].coursecode)}}</td>
+        <td>{{'%5s'%(copos[i].classname)}}</td>
+        <td width=300> <i>{{copos[i].coursename}}</i></td>
+        <td> {{get_examsession(copos[i].examsession) }}</td>
+        <td> <a href = "{{ url_for('copopreview', uniqueID = copos[i].uniqueID) }}">Preview</a></td>
+        <td> >>> </td>
+        {% if copos[i].bool_done == 1 %}
+            <td>            DONE</td>
+        {% else %}
+            <td>        NOT DONE</td>
+        {% endif %}
+        </td> 
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
