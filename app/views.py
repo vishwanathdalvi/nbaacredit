@@ -157,11 +157,8 @@ def copoform(uniqueID):
 @app.route('/copy_select/<uniqueID>')
 def copy_select(uniqueID):
     user = g.user
-    nickname = user.nickname
-    if nickname == 'admin':
-        copos = CoPoMap.query.filter(True).order_by(CoPoMap.examsession, CoPoMap.classname, CoPoMap.coursecode)
-    else:
-        copos = CoPoMap.query.filter(CoPoMap.pointfaculty == nickname).order_by(CoPoMap.examsession, CoPoMap.classname, CoPoMap.coursecode)
+    coursecode = uniqueID.split('_')[0]
+    copos = CoPoMap.query.filter(CoPoMap.coursecode == coursecode).order_by(CoPoMap.examsession)
     return render_template('copy.html', user = user, uniqueID=uniqueID, copos = copos, ncopo = copos.count(), get_examsession = config.get_examsession)       
     
     
