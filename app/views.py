@@ -48,6 +48,7 @@ def home():
 @app.route('/guest/<examsession>/<classname>')
 def guest(examsession=False, classname=False):
     g.user=User.query.filter(User.nickname == 'guest').first()
+    login_user(g.user)
     nexamsessions = len(config.dict_examsessions)
     get_examsession = config.get_examsession
     if examsession:
@@ -97,6 +98,7 @@ def user(nickname):
     return render_template('user.html', user = user, copos = copos, ncopo = copos.count(), get_examsession = config.get_examsession)       
    
 @app.route('/copopreview/<uniqueID>',methods=['GET','POST'])
+@login_required
 def copopreview(uniqueID):
     copo = CoPoMap.query.filter(CoPoMap.uniqueID == uniqueID).first()
     if request.method == 'POST': #

@@ -9,7 +9,7 @@
         <p> To go back to the User Menu, click on: <input type="button" onclick="location.href='{{url_for('user',nickname = user.nickname)}}';" value="BACK" /> </p>
         <p> If you would like to make changes, click on: <input type="button" onclick="location.href='{{url_for('copoform',uniqueID = copo.uniqueID)}}';" value="EDIT" /> </p>    
     {% else %}
-        <p> This is the form as the Point Faculty last left it. If you want to suggest changes, please contact the Point Faculty or the administrator </p>
+        <p> Welcome {{ user.nickname }}! This is the form as the Point Faculty last left it. If you want to suggest changes, please contact the Point Faculty or the administrator </p>
         <p> The Point Faculty for this form is <b>{{ copo.pointfaculty }}</b> </p>
         <p> To go back to the User Menu, click on: <input type="button" onclick="location.href='{{url_for('guest',examsession=copo.examsession,classname=copo.classname)}}';" value="BACK" /> </p>
 
