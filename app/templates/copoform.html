@@ -46,7 +46,10 @@
     <table>
         <tr>
             <td></td><td></td>
-            <td> Course Outcome Description <i>(Max 300 Characters)</i> </td><td></td><td></td> 
+            <td> Course Outcome Description <i>(Max 300 Characters)</i> </td>
+            <td></td>
+            <td></td> 
+            <td><a href="http://www.istqb.org/exams-root/what-are-k-levels.html">What are K-levels?</a></td> 
         </tr> 
         {% for (i, courseoutcome, klevel) in courseOutcomeKlevel %}   
             <tr>
@@ -64,15 +67,19 @@
         {% endfor %}
     </table>
     <p><b>CO - PO Correlation:</b>
-         Please state how well each course outcome (CO) correlates with each program outcome (PO) </p>
+         Please state how well each course outcome (CO) correlates with each Program Outcome (PO) </p>
            <p> <b>S:</b> <i>Strong correlation</i>  <b>M:</b><i> Medium Correlation </i>  
                  <b>W:</b> <i>Weak Correlation  </i>  <b>N:</b><i> No correlation     </i> </p>
+
     <table>
         <tr>
             <td>.</td>
             {% for j in range(nprogramoutcomes) %}
                 <td> <b>{{ "PO%d"%(j+1) }}</b></td>
             {% endfor %}
+            <td> <a href="{{url_for('programoutcomes')}}">What are the 14 Program Outcomes (PO1-PO14)?</a></td>
+            
+
         </tr>
         {% for i in range(ncourseoutcomes) %}
         <tr>
@@ -88,7 +95,7 @@
         {% endfor %}
     </table>
 
-    <p><b> Question-wise CO weightage </b></p>
+    <p><b> Question-wise CO weightage:</b> You can give inputs for upto 15 questions.  Additional comments e.g. which questions are optional etc. can be entered in the box at the bottom.</p>
     <table>
         <tr>
             <td width=80>.</td>

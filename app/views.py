@@ -42,6 +42,10 @@ def home():
     return render_template('home.html',
                            title = 'NBA Work Home')
 
+@app.route('/programoutcomes')
+def programoutcomes():
+    return render_template('programoutcomes.html')
+
 @app.route('/guest')
 @app.route('/guest/<examsession>/')
 @app.route('/guest/<examsession>/<classname>')

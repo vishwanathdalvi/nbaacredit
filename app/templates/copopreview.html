@@ -62,7 +62,11 @@
     <table>
         <tr>
             <td></td><td></td>
-            <td> Course Outcome Description <i>(Max 300 Characters)</i> </td><td></td><td></td><td>K-level</td> 
+            <td> Course Outcome Description <i>(Max 300 Characters)</i> </td>
+            <td></td>
+            <td></td>
+            <td>K-level</td> 
+            <td><a href="http://www.istqb.org/exams-root/what-are-k-levels.html">What are K-levels?</a></td> 
         </tr> 
         {% for (i, courseoutcome, klevel) in courseOutcomeKlevel %}   
             <tr>
@@ -83,6 +87,7 @@
             {% for j in range(nprogramoutcomes) %}
                 <td> <b>{{ "PO%d"%(j+1) }}</b></td>
             {% endfor %}
+            <td> <a href="{{url_for('programoutcomes')}}">What are the 14 Program Outcomes (PO1-PO14)?</a></td>
         </tr>
         {% for i in range(ncourseoutcomes) %}
         <tr>
