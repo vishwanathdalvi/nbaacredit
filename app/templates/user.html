@@ -20,7 +20,12 @@
         {% else %}
             <td>        NOT DONE</td>
         {% endif %}
-        </td> 
+        {% if copos[i].bool_uploaded == 1 %}
+            <td> File Uploaded. </td><td> <a href="{{url_for('show_file',filename=copos[i].uniqueID+'.csv')}}">Download</a> </td> 
+        {% else %}
+            <td> File Not Uploaded </td>
+        {% endif %}
+        
         </tr>
     {% endfor %}
     </table>

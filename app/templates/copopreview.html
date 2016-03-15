@@ -126,6 +126,11 @@
         </tr>
 
     </table>
-            
+    <p><b> Question-Wise Mark List</b></p>
+    {% if copo.bool_uploaded == 1 %}
+        <p> A questionwise marklist <i>{{copo.uniqueID}}.csv</i> has been uploaded.  To view it click <a href="{{url_for('show_file',filename=copo.uniqueID+'.csv')}}">here</a></p> 
+    {% else %}
+        <p> To complete this submission, you need to upload the question-wise marklist in <i>{{copo.uniqueID}}.csv</i>. It is not yet uploaded.</p>   
+    {% endif %}   
     </form>
 {% endblock %}

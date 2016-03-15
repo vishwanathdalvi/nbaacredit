@@ -7,6 +7,10 @@ from datetime import datetime
 import pytz
 import config
 
+import os
+from werkzeug import secure_filename
+from flask import send_from_directory
+from app import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
     
 @lm.user_loader
 def load_user(id):
@@ -175,3 +179,32 @@ def copy_execute(uniqueID, template_uniqueID):
     db.session.add(copo)
     db.session.commit()
     return redirect(url_for('copoform',uniqueID=uniqueID))
+    
+    
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/upload/<uniqueID>',methods=['GET','POST'])
+def upload_file(uniqueID):
+    copo = CoPoMap.query.filter(CoPoMap.uniqueID == uniqueID).first()
+    form = CoPoForm()
+    if request.method == 'POST':
+        file = request.files['file']
+        file_name = file.filename.split('.')[0]
+        if file and allowed_file(file.filename) and file_name == uniqueID:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+            copo.bool_uploaded = 1
+            db.session.add(copo)
+            db.session.commit()
+            return redirect(url_for('copoform',uniqueID=uniqueID))
+        else:
+            flash("Please upload a file named %s.csv"%(uniqueID))
+            return redirect(url_for('upload',uniqueID=uniqueID))
+    return render_template('upload.html',copo = copo, uniqueID = uniqueID, form=form)
+    
+@app.route('/showfile/<filename>')
+def show_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'],
+                               filename)
+    

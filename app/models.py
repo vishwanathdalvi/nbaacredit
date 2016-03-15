@@ -65,6 +65,7 @@ class CoPoMap(db.Model):
     coqcorr  = db.Column(db.PickleType) #Course Outcome Question Correlation Matrix
     
     bool_done = db.Column(db.Integer)
+    bool_uploaded = db.Column(db.Integer)
     def __repr__(self):
         return '<Course %s Session %s>'%(self.coursecode, self.examsession) 
     
@@ -86,3 +87,4 @@ class CoPoMap(db.Model):
         self.copocorr = copy.deepcopy(copo.copocorr)
         
         self.bool_done = 0
+        self.bool_uploaded = 0

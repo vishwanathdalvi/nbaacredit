@@ -137,6 +137,11 @@
             <td> <input type="submit" value="Save Changes"> </td> 
         </tr>
     </table>
-        
     </form>
+    <p><b> Question-Wise Mark List</b></p>
+    {% if copo.bool_uploaded == 1 %}
+        <p> You have already uploaded a questionwise marklist <i>{{copo.uniqueID}}.csv</i>.  To upload it again, click  <a href="{{url_for('upload_file',uniqueID=copo.uniqueID)}}">here</a>.</p>
+    {% else %}
+        <p> You need to upload a question-wise marklist.  If you have prepared it, you can upload your file named <i>{{copo.uniqueID}}.csv</i> <a href="{{url_for('upload_file',uniqueID=copo.uniqueID)}}">here</a>.</p>
+    {% endif %}
 {% endblock %}

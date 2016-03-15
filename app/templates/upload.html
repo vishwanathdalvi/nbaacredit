@@ -1,0 +1,12 @@
+<!-- extend from base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+    <h1> Upload File for Questionwise Marks </h1>
+    <p> Please upload a file named {{uniqueID}}.csv</p>
+    <form action="" method="post" enctype=multipart/form-data>
+    {{ form.hidden_tag() }}
+        <p> <input type=file name="file"
+        <p> <input type="submit"  value="Upload"> </p>
+    </form>
+{% endblock %}
