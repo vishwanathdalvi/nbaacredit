@@ -8,10 +8,12 @@ import pytz
 import config
 
 import os
+import pandas as pd
 from werkzeug import secure_filename
 from flask import send_from_directory
 from app import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
     
+
 @lm.user_loader
 def load_user(id):
     return User.query.get(int(id))
@@ -143,10 +145,15 @@ def copoform(uniqueID):
             now = datetime.now(pytz.timezone("Asia/Calcutta"))
             copo.whenmodified = now.replace(tzinfo=None) 
             form.formtodata(copo)
-            db.session.add(copo)
-            db.session.commit()
             copo = CoPoMap.query.filter(CoPoMap.uniqueID == uniqueID).first()
             flash("Thank you for taking the time to fill up this form.  Your information is saved.")
+            if not validate_and_calculate(copo):
+                flash("WARNING! .csv file not uploaded OR Max marks in uploaded file do not tally with max marks in form!  Calculations could be inconsistent. Uploaded file is rejected")
+                copo.bool_uploaded = 0
+            db.session.add(copo)
+            db.session.commit()
+                
+
             return redirect(url_for('copopreview',uniqueID=copo.uniqueID))
     else:
         form = CoPoForm()
@@ -184,6 +191,44 @@ def copy_execute(uniqueID, template_uniqueID):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
 
+listQ = ['Q1','Q2','Q3','Q4','Q5','Q6','Q7','Q8','Q9','Q10','Q11','Q12','Q13','Q14','Q15']
+def validate(copo):
+    uniqueID = copo.uniqueID
+    filename = uniqueID+'.csv'
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'],filename)
+    if os.path.isfile(filepath):
+        df = pd.read_csv(filepath).fillna('0')
+        maxx = df.iloc[0]
+        bool_marks_tally = True
+        for i in xrange(len(listQ)):
+            Qi = listQ[i]
+            try:
+                maxmarks_csv = float(maxx[Qi])
+            except ValueError:
+                maxmarks_csv = 0.0
+            try:
+                maxmarks_form = float(copo.coqcorr[i]["marksassigned"])
+            except ValueError:
+                maxmarks_form = 0.0
+            if maxmarks_csv != maxmarks_form:
+                bool_marks_tally = False
+                break
+    else:
+        bool_marks_tally = False
+    return bool_marks_tally
+        
+    
+def validate_and_calculate(copo):
+    try:
+        bool_valid = validate(copo)
+    except:
+        bool_valid = False
+    copo.bool_uploaded = 1
+    db.session.add(copo)
+    db.session.commit()
+    return bool_valid
+    
+
 @app.route('/upload/<uniqueID>',methods=['GET','POST'])
 def upload_file(uniqueID):
     copo = CoPoMap.query.filter(CoPoMap.uniqueID == uniqueID).first()
@@ -194,13 +239,10 @@ def upload_file(uniqueID):
         if file and allowed_file(file.filename) and file_name == uniqueID:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
-            copo.bool_uploaded = 1
-            db.session.add(copo)
-            db.session.commit()
             return redirect(url_for('copoform',uniqueID=uniqueID))
         else:
             flash("Please upload a file named %s.csv"%(uniqueID))
-            return redirect(url_for('upload',uniqueID=uniqueID))
+            return redirect(url_for('upload_file',uniqueID=uniqueID))
     return render_template('upload.html',copo = copo, uniqueID = uniqueID, form=form)
     
 @app.route('/showfile/<filename>')
