@@ -2,14 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1> Upload File for Questionwise Marks </h1>
-    <p> Please upload a file named {{uniqueID}}.csv</p>
-    <form action="" method="post" enctype=multipart/form-data>
-    {{ form.hidden_tag() }}
-        <p> <input type=file name="file">
-        <p> <input type="submit"  value="Upload"> </p>
-    </form>
-    <h2> File Format </h2>
+    <h1> File Format </h1>
     <p> The file format is very exacting.  The file (when opened in Excel) should look like the sample below</p>
     <table>
     <tr>
@@ -29,9 +22,10 @@
         <td align="right" bgcolor="#D3D3D3">4</td><td>2</td><td>7</td><td>2</td><td>2</td><td>6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td> 
     </tr>    
     </table>
+    <p> Here, the exam had 4 questions.  The row beginning with 'max' tells us that Question 1 (Q1) carried a maximum of 10 marks, Q2 5 marks, Q3 5 marks and Q4 10 marks.  You can leave the other cells blank.</p>
+    <p> The student with ID = 1 got 8 marks on Q1, 3 on Q2, 2 on Q3 and 9 on Q4.  The student with ID = 2 got 7 on Q1, 2 on Q2, 2 on Q3 and 6 on Q4 </p>
     <p><b> NOTE: </b></p>
     <p> Be very sure that all the 'Q' are capitalized and that the 'max' is lowercase </p>
     <p> The first line (beginning with 'max') is the line for maximum marks and will be tallied with the data entered in the form.</p>
-    <p> This is to make sure you have uploaded the right file! :) </p>
-    
+    <p> This is to make sure you have uploaded the right file! :) </p>    
 {% endblock %}

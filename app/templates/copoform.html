@@ -4,7 +4,7 @@
     <h1> Course Outcomes Form </h1>
     <p> You can save yourself some time by copying course-outcome and CO-PO mapping data from another form you may have filled.</p>
     <p> Just click here: <input type="button" onclick="location.href='{{url_for('copy_select',uniqueID = copo.uniqueID)}}';" value="COPY" />
-    <form action="" method="post" name="copoform">
+    <form action="" method="post" name="copoform" enctype=multipart/form-data> 
     {{ form.hidden_tag() }}
     <table>
         <tr>
@@ -134,14 +134,62 @@
             <td> {{ form.description(cols="80", rows="2"|safe) }} </td>
         </tr>
         <tr>
-            <td> <input type="submit" value="Save Changes"> </td> 
+            <td> <input type="submit" name="btn" value="Save Changes"> </td> 
         </tr>
     </table>
-    </form>
-    <p><b> Question-Wise Mark List</b></p>
+    
+
+    <h1> Upload File for Questionwise Marks </h1>
+    <p><b> Question-Wise MarkList</b></p>
     {% if copo.bool_uploaded == 1 %}
-        <p> You have already uploaded a questionwise marklist <i>{{copo.uniqueID}}.csv</i>.  To upload it again, click  <a href="{{url_for('upload_file',uniqueID=copo.uniqueID)}}">here</a>.</p>
+        <p> You have already uploaded a questionwise marklist <i>{{copo.uniqueID}}.csv</i>.  To upload it again, see below.</p>
     {% else %}
-        <p> You need to upload a question-wise marklist.  If you have prepared it, you can upload your file named <i>{{copo.uniqueID}}.csv</i> <a href="{{url_for('upload_file',uniqueID=copo.uniqueID)}}">here</a>.</p>
+        <p> You need to upload a question-wise marklist.  If you have prepared it, you can upload your file below.</p>
     {% endif %}
+
+    <p> Please upload a <i>.csv</i> file </p>
+    <p> <input type=file name="file">
+     <input type="submit" name="btn" value="Upload"> </p>
+    <p> The file format is rather exacting.  Check it out <a href="{{url_for('fileformat')}}">here</a>.</p>
+    </form>
+    <h1>Course Outcome Attainment</h1>
+    {% if nfrattain == 0 %}
+        <p> You need to upload a questionwise marklist.  It has not yet been uploaded. </p>
+    {% else %}
+        <p>------------------------------------------------------------------------------------------------------</p>
+        <p> The attainment results calculated using the data in the uploaded file (see below) are as follows: </p>
+        <table>
+            <tr>
+                <td> <b>Course Outcome</b> </td>
+                {% for i in range(ncourseoutcomes) %}
+                    <td>{{"CO%d"%(i+1)}}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td> <b>Attainment (%)</b> </td>
+                {% for i in range(ncourseoutcomes) %}
+                    <td>{{"%3.1f"%(frattain[i])}}</td>
+                {% endfor %}
+            </tr>
+        </table>
+        <p>------------------------------------------------------------------------------------------------------</p>
+        <p> <b> NOTE:</b> In the above table 'nan' implies Not Applicable.</p>
+    {% endif %}
+
+    {% if copo.bool_uploaded == 1 %}
+    <h2> Uploaded File </h2>
+    <p> Your uploaded file is as follows: </p>
+    <table>
+    {% for row in marks_data %}
+        <tr>
+        {% for data in row.split(',') %}
+            <td>
+                {{ data }}
+            </td>
+        {% endfor %}
+        </tr>
+    {% endfor %}
+    </table>
+    {% endif %}
+
 {% endblock %}

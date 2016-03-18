@@ -66,6 +66,8 @@ class CoPoMap(db.Model):
     
     bool_done = db.Column(db.Integer)
     bool_uploaded = db.Column(db.Integer)
+    
+    #marks = db.Column(db.PickleType)
     def __repr__(self):
         return '<Course %s Session %s>'%(self.coursecode, self.examsession) 
     

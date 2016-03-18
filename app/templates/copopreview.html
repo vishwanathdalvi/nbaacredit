@@ -126,11 +126,50 @@
         </tr>
 
     </table>
+    <h1>Course Outcome Attainment</h1>
+    {% if nfrattain == 0 %}
+        <p> You need to upload a questionwise marklist.  It has not yet been uploaded. </p>
+    {% else %}
+        <p>------------------------------------------------------------------------------------------------------</p>
+        <p> The attainment results calculated using the data in the uploaded file (see below) are as follows: </p>
+        <table>
+            <tr>
+                <td> <b>Course Outcome</b> </td>
+                {% for i in range(ncourseoutcomes) %}
+                    <td>{{"CO%d"%(i+1)}}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td> <b>Attainment (%)</b> </td>
+                {% for i in range(ncourseoutcomes) %}
+                    <td>{{"%3.1f"%(frattain[i])}}</td>
+                {% endfor %}
+            </tr>
+        </table>
+        <p>------------------------------------------------------------------------------------------------------</p>
+     <p> <b> NOTE:</b> In the above table 'nan' implies Not Applicable.</p>
+    {% endif %}
     <p><b> Question-Wise Mark List</b></p>
     {% if copo.bool_uploaded == 1 %}
-        <p> A questionwise marklist <i>{{copo.uniqueID}}.csv</i> has been uploaded.  To view it click <a href="{{url_for('show_file',filename=copo.uniqueID+'.csv')}}">here</a></p> 
+        <p> A questionwise marklist <i>{{copo.uniqueID}}.csv</i> has been uploaded (see below).  To download it click <a href="{{url_for('show_file',filename=copo.uniqueID+'.csv')}}">here</a></p> 
+        {% if copo.bool_uploaded == 1 %}
+        <h2> Uploaded File </h2>
+        <p> Your uploaded file is as follows: </p>
+        <table>
+        {% for row in marks_data %}
+            <tr>
+            {% for data in row.split(',') %}
+                <td>
+                    {{ data }}
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </table>
+        {% endif %}
     {% else %}
-        <p> To complete this submission, you need to upload the question-wise marklist in <i>{{copo.uniqueID}}.csv</i>. It is not yet uploaded.</p>   
+        <p> To complete this submission, you need to upload the question-wise marklist as a <i>.csv</i> file. It is not yet uploaded.</p>   
     {% endif %}   
     </form>
+
 {% endblock %}
