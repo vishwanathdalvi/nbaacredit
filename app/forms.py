@@ -145,7 +145,10 @@ class CoPoForm(Form):
             copo.copocorr[i] = []
             for j in xrange(config.nprogramoutcomes):
                 inp = self.copotable.entries[i].coporow.entries[j].copocorr.data
-                inp = inp.upper()[0]
+                try:
+                    inp = inp.upper()[0]
+                except IndexError:
+                    inp = 'N'
                 inp = inp if inp in ['S','W','M'] else 'N'
                 copo.copocorr[i] += [inp]
         
