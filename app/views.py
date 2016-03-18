@@ -130,8 +130,10 @@ def copopreview(uniqueID):
             fio = open(filepath, 'r')
             marks_data = fio.readlines()
             fio.close()
+            copo.bool_uploaded = 1
         else:
             marks_data = []
+            copo.bool_uploaded = 0
         frattain = calculate(copo)
 
     return render_template('copopreview.html', 
