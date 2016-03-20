@@ -164,39 +164,44 @@ def calculate(copo):
         copo.bool_uploaded = 1
         df = pd.read_csv(filepath).fillna('0')
         maxmarks_file = numpy.array(df.loc[0,'Q1':'Q15'].values).astype(float) #Q=15 element vector
-        allmarks = numpy.array(df.loc[1:,'Q1':'Q15'].values).astype(float) #NxQ element matrix N=number of students; Q = number of questions
-        signmarks = numpy.sign(allmarks)   
-        frac_attempt = signmarks.sum(axis=0).astype(float)/len(allmarks) #Q element vector
-        maxmarks_form = []; targetmarks = []; coq = []
-        for i in xrange(config.nquestions):
-            mmf = copo.coqcorr[i]["marksassigned"]
-            tmf = copo.coqcorr[i]["targetmarks"]
-            try:
-                mmf = float(mmf)
-            except ValueError:
-                mmf = 0.0
-            try:
-                tmf = float(tmf)
-            except ValueError:
-                tmf = 0.0
-            maxmarks_form += [mmf]
-            targetmarks += [tmf]
-            coq.append([])
-            for j in xrange(config.ncourseoutcomes):
-                frco = copo.coqcorr[i][j]
+        try:
+            allmarks = numpy.array(df.loc[1:,'Q1':'Q15'].values).astype(float) #NxQ element matrix N=number of students; Q = number of questions
+            signmarks = numpy.sign(allmarks)   
+            frac_attempt = signmarks.sum(axis=0).astype(float)/len(allmarks) #Q element vector
+            maxmarks_form = []; targetmarks = []; coq = []
+            for i in xrange(config.nquestions):
+                mmf = copo.coqcorr[i]["marksassigned"]
+                tmf = copo.coqcorr[i]["targetmarks"]
                 try:
-                    frco = float(frco)
+                    mmf = float(mmf)
                 except ValueError:
-                    frco = 0.0
-                coq[i] += [frco]
-        maxmarks_form = numpy.array(maxmarks_form).astype(float)
-        targetmarks = numpy.array(targetmarks).astype(float)
-        coq = numpy.array(coq).astype(float) #QxC matrix.  Q=number of questions C=number of course outcomes
-        
-        maxattain = (maxmarks_form*targetmarks/100.0*frac_attempt*coq.T/100.0).sum(axis=1) #C element vector
-        meanattain = (allmarks.mean(axis=0)*coq.T/100.0).sum(axis=1)
-        frattain = meanattain/maxattain*100
-        return frattain
+                    mmf = 0.0
+                try:
+                    tmf = float(tmf)
+                except ValueError:
+                    tmf = 0.0
+                maxmarks_form += [mmf]
+                targetmarks += [tmf]
+                coq.append([])
+                for j in xrange(config.ncourseoutcomes):
+                    frco = copo.coqcorr[i][j]
+                    try:
+                        frco = float(frco)
+                    except ValueError:
+                        frco = 0.0
+                    coq[i] += [frco]
+            maxmarks_form = numpy.array(maxmarks_form).astype(float)
+            targetmarks = numpy.array(targetmarks).astype(float)
+            coq = numpy.array(coq).astype(float) #QxC matrix.  Q=number of questions C=number of course outcomes
+            
+            maxattain = (maxmarks_form*targetmarks/100.0*frac_attempt*coq.T/100.0).sum(axis=1) #C element vector
+            meanattain = (allmarks.mean(axis=0)*coq.T/100.0).sum(axis=1)
+            frattain = meanattain/maxattain*100
+            return frattain
+        except ValueError:
+            flash("Something wrong with uploaded file.  Unable to read.")
+            copo.bool_uploaded = 0
+            return []
     else:
         flash("No questionwise marklist uploaded.  Calculations not done")
         copo.bool_uploaded = 0
