@@ -161,6 +161,7 @@ def calculate(copo):
     filename = uniqueID+'.csv'
     filepath = os.path.join(app.config['UPLOAD_FOLDER'],filename)
     if os.path.isfile(filepath):
+        copo.bool_uploaded = 1
         df = pd.read_csv(filepath).fillna('0')
         maxmarks_file = numpy.array(df.loc[0,'Q1':'Q15'].values).astype(float) #Q=15 element vector
         allmarks = numpy.array(df.loc[1:,'Q1':'Q15'].values).astype(float) #NxQ element matrix N=number of students; Q = number of questions
@@ -198,6 +199,7 @@ def calculate(copo):
         return frattain
     else:
         flash("No questionwise marklist uploaded.  Calculations not done")
+        copo.bool_uploaded = 0
         return []
         
             
