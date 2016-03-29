@@ -25,8 +25,19 @@
         {% else %}
             <td> File Not Uploaded </td>
         {% endif %}
+
+        {% if user.nickname == "labuser" %}
+            <td>
+                 <a href="{{url_for('remove_entry',uniqueID = copos[i].uniqueID)}}">Remove Entry</a>
+            </td>
+        {% endif %}
         
         </tr>
     {% endfor %}
     </table>
+    {% if user.nickname == "labuser" %}
+        <p>
+            <input type="button" onclick="location.href='{{url_for('newcourse')}}';" value="ADD COURSE" />
+        </p>
+    {% endif %}
 {% endblock %}

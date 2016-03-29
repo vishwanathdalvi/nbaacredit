@@ -1,0 +1,23 @@
+<!-- extends base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1> Remove Entry Dialog </h1>
+    {% if user.nickname == 'labuser' %}
+    <p>
+        Do you really want to delect the course {{ uniqueID }}?
+    </p> 
+     <form action="" method="post" name="newcourse" enctype=multipart/form-data> 
+    {{ form.hidden_tag() }}
+    <table>
+        <tr>
+            <td> <input type="submit" name="btn" value="YES"> </td> 
+            <td> <input type="button" onclick="location.href='{{url_for('user', nickname=user.nickname)}}';" value="NO" /> </td> 
+        </tr>
+
+    </table>
+    </form>
+    {%  else %}
+    <p> You must be logged in as labuser to remove your course. </p>
+    {% endif %}
+
+{% endblock %}

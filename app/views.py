@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, session, url_for, request, g, abort
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm
-from forms import CoPoForm, LoginForm, CoPoCell
+from forms import CoPoForm, LoginForm, CoPoCell, NewCourseForm
 from models import User, CoPoMap
 from datetime import datetime
 import pytz
@@ -12,8 +12,8 @@ import pandas as pd
 from werkzeug import secure_filename
 from flask import send_from_directory
 from app import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
-
-import numpy
+ 
+import numpy   
 
 @lm.user_loader
 def load_user(id):
@@ -22,7 +22,7 @@ def load_user(id):
 @app.before_request
 def before_request():
     g.user = current_user
-
+    
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     if g.user is not None and g.user.is_authenticated:
@@ -52,7 +52,7 @@ def home():
 @app.route('/programoutcomes')
 def programoutcomes():
     return render_template('programoutcomes.html')
-
+    
 @app.route('/fileformat')
 def fileformat():
     return render_template('fileformat.html')
@@ -75,22 +75,22 @@ def guest(examsession=False, classname=False):
                                    welcometext = welcometext,
                                    examsession = True,
                                    classname = True,
-                                   get_examsession = get_examsession)
+                                   get_examsession = get_examsession)            
         else:
             classlist = ['FYCE','SYCE','TYCE','FNCE','MCHE']
             welcometext = "You have chosen %s.  Please select a class."%(get_examsession(examsession))
-            return render_template('guest.html',
+            return render_template('guest.html', 
                                    iexamsession = examsession,
                                    examsession = True,
                                    classname = False,
                                    welcometext = welcometext,
-                                   classlist = classlist)
+                                   classlist = classlist)        
     else:
         welcometext = "Please select one of the following exam sessions."
-        return render_template('guest.html',
+        return render_template('guest.html', 
                                examsession = False,
                                welcometext = welcometext,
-                               nexamsessions = nexamsessions,
+                               nexamsessions = nexamsessions, 
                                get_examsession = get_examsession)
 
 @app.route('/index')
@@ -106,16 +106,11 @@ def user(nickname):
         flash('User %s not found.  Please write to your administrator'%nickname)
         return redirect(url_for('home'))
     if nickname == 'admin':
-        copos = CoPoMap.query.filter(True).order_by(CoPoMap.examsession, CoPoMap.classname, CoPoMap.coursecode)
+        copos = CoPoMap.query.filter(CoPoMap.uniqueID != None).order_by(CoPoMap.examsession, CoPoMap.classname, CoPoMap.coursecode)
     else:
-        copos = CoPoMap.query.filter(CoPoMap.pointfaculty == nickname).order_by(CoPoMap.examsession, CoPoMap.classname, CoPoMap.coursecode)
-    for copo in copos:
-        filename = copo.uniqueID+'.csv'
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'],filename)
-        if os.path.isfile(filepath):
-            copo.bool_uploaded = 1
-    return render_template('user.html', user = user, copos = copos, ncopo = copos.count(), get_examsession = config.get_examsession)
-
+        copos = CoPoMap.query.filter(CoPoMap.uniqueID != None).filter(CoPoMap.pointfaculty == nickname).order_by(CoPoMap.examsession, CoPoMap.classname, CoPoMap.coursecode)
+    return render_template('user.html', user = user, copos = copos, ncopo = copos.count(), get_examsession = config.get_examsession)       
+   
 @app.route('/copopreview/<uniqueID>',methods=['GET','POST'])
 @login_required
 def copopreview(uniqueID):
@@ -141,9 +136,9 @@ def copopreview(uniqueID):
             copo.bool_uploaded = 0
         frattain = calculate(copo)
 
-    return render_template('copopreview.html',
-                           user = g.user,
-                           copo = copo,
+    return render_template('copopreview.html', 
+                           user = g.user, 
+                           copo = copo, 
                            form = form,
                            courseOutcomeKlevel = form.courseOutcomeKlevel,
                            get_examsession = config.get_examsession,
@@ -171,7 +166,7 @@ def calculate(copo):
         try:
             maxmarks_file = numpy.array(df.loc[0,'Q1':'Q15'].values).astype(float) #Q=15 element vector
             allmarks = numpy.array(df.loc[1:,'Q1':'Q15'].values).astype(float) #NxQ element matrix N=number of students; Q = number of questions
-            signmarks = numpy.sign(allmarks)
+            signmarks = numpy.sign(allmarks)   
             frac_attempt = signmarks.sum(axis=0).astype(float)/len(allmarks) #Q element vector
             maxmarks_form = []; targetmarks = []; coq = []
             for i in xrange(config.nquestions):
@@ -198,7 +193,7 @@ def calculate(copo):
             maxmarks_form = numpy.array(maxmarks_form).astype(float)
             targetmarks = numpy.array(targetmarks).astype(float)
             coq = numpy.array(coq).astype(float) #QxC matrix.  Q=number of questions C=number of course outcomes
-
+            
             maxattain = (maxmarks_form*targetmarks/100.0*frac_attempt*coq.T/100.0).sum(axis=1) #C element vector
             meanattain = (allmarks.mean(axis=0)*coq.T/100.0).sum(axis=1)
             frattain = meanattain/maxattain*100
@@ -211,9 +206,9 @@ def calculate(copo):
         flash("No questionwise marklist uploaded.  Calculations not done")
         copo.bool_uploaded = 0
         return []
-
-
-
+        
+            
+    
 def upload_file(copo, form):
     file = request.files['file']
     if file and allowed_file(file.filename):
@@ -223,16 +218,17 @@ def upload_file(copo, form):
         copo.bool_uploaded = 1
     else:
         flash("Please upload a .csv file")
-
-def read_copo_form(copo, form):
-    form.get_courseOutcome()
+    
+def read_copo_form(copo, form, bool_copoform=True):
+    if bool_copoform:
+        form.get_courseOutcome()
     if not form.validate():
         flash(form.errors)
     else:
         copo.bool_done = 0
         copo.whomodified = g.user.nickname
         now = datetime.now(pytz.timezone("Asia/Calcutta"))
-        copo.whenmodified = now.replace(tzinfo=None)
+        copo.whenmodified = now.replace(tzinfo=None) 
         form.formtodata(copo)
 
 @app.route('/copoform/<uniqueID>', methods = ['GET','POST'])
@@ -268,8 +264,8 @@ def copoform(uniqueID):
         frattain = calculate(copo)
 
     return render_template('copoform.html',
-                           user = g.user,
-                           copo = copo,
+                           user = g.user, 
+                           copo = copo, 
                            form = form,
                            courseOutcomeKlevel = form.courseOutcomeKlevel,
                            get_examsession = config.get_examsession,
@@ -285,27 +281,79 @@ def copy_select(uniqueID):
     user = g.user
     coursecode = uniqueID.split('_')[0]
     copos = CoPoMap.query.filter(CoPoMap.coursecode == coursecode).order_by(CoPoMap.examsession)
-    return render_template('copy.html', user = user, uniqueID=uniqueID, copos = copos, ncopo = copos.count(), get_examsession = config.get_examsession)
-
-
+    return render_template('copy.html', user = user, uniqueID=uniqueID, copos = copos, ncopo = copos.count(), get_examsession = config.get_examsession)       
+    
+    
 @app.route('/copy_execute/<uniqueID>/<template_uniqueID>')
 def copy_execute(uniqueID, template_uniqueID):
     copo = CoPoMap.query.filter(CoPoMap.uniqueID == uniqueID).first()
     template_copo = CoPoMap.query.filter(CoPoMap.uniqueID == template_uniqueID).first()
-
+    
     copo.copy_data(template_copo)
     db.session.add(copo)
     db.session.commit()
     return redirect(url_for('copoform',uniqueID=uniqueID))
-
-
-
-
-
-
-
-
+    
+    
 @app.route('/showfile/<filename>')
 def show_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
+
+@app.route('/newcourse', methods = ['GET','POST'])   
+@login_required 
+def newcourse():
+    if request.method == 'POST':
+        copo = CoPoMap()
+        form = NewCourseForm()
+        if form.validate():
+            read_copo_form(copo, form, bool_copoform = False)
+            copo.pointfaculty = g.user.nickname
+            copo.uniqueID = form.coursecode.data+'_'+str(form.examsession.data)
+
+            copo.outcomeKlevel_1 = 0
+            copo.outcomeKlevel_2 = 0
+            copo.outcomeKlevel_3 = 0
+            copo.outcomeKlevel_4 = 0
+            copo.outcomeKlevel_5 = 0
+            copo.outcomeKlevel_6 = 0
+    
+            copo.copocorr = {}
+            for i in xrange(config.ncourseoutcomes):
+                copo.copocorr[i] = []
+                for j in xrange(config.nprogramoutcomes):
+                    inp = 'N'
+                    copo.copocorr[i] += [inp]
+            
+            copo.coqcorr = {}
+            for i in xrange(config.nquestions):
+                copo.coqcorr[i] = {}
+                for j in xrange(config.ncourseoutcomes):
+                    copo.coqcorr[i][j] = '0'
+                copo.coqcorr[i]["marksassigned"] = '0'
+                copo.coqcorr[i]["targetmarks"] = '0'
+        
+            copo.bool_done = 0    
+            copo.bool_uploaded = 0
+
+            db.session.add(copo)
+            db.session.commit()
+            return redirect(url_for('user',nickname = g.user.nickname))
+        else:
+            flash(form.errors)            
+            return render_template('newcourse.html', form=form, user = g.user)
+    else:
+        form = NewCourseForm()
+        return render_template('newcourse.html', form=form, user = g.user)
+
+@app.route('/remove_entry/<uniqueID>', methods = ['GET','POST'])
+@login_required
+def remove_entry(uniqueID):
+    if request.method == 'POST':
+        copo = CoPoMap.query.filter(CoPoMap.uniqueID == uniqueID).first()
+        db.session.delete(copo)
+        db.session.commit()
+        return redirect(url_for('user',nickname=g.user.nickname))
+    else:
+        form = CoPoForm()
+        return render_template('remove_entry.html', uniqueID = uniqueID, user = g.user, form=form)

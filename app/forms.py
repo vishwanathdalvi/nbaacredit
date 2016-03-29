@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Length
 from flask.ext.wtf import Form
 
 import config
-from app.models import User
+from app.models import User, CoPoMap
 
 class LoginForm(Form):
     username = StringField('username',validators=[DataRequired()])
@@ -160,4 +160,34 @@ class CoPoForm(Form):
             copo.coqcorr[i]["marksassigned"] = self.coqtable.entries[i].marksassigned.data
             copo.coqcorr[i]["targetmarks"] = self.coqtable.entries[i].targetmarks.data
         
-        
+class NewCourseForm(Form):
+    coursecode = TextAreaField('coursecode', validators=[Length(max=30)])
+    coursename = TextAreaField('coursename', validators=[Length(max=30)])  
+    classname  = SelectField('classname', coerce=int, choices=[(key, config.dict_class[key]) for key in config.dict_class.keys()])
+    facultyname_1 = TextAreaField('facultyname_1',validators = [Length(max=70)])
+    facultyname_2 = TextAreaField('facultyname_2',validators = [Length(max=70)])
+    facultyname_3 = TextAreaField('facultyname_3',validators = [Length(max=70)])
+    facultyname_4 = TextAreaField('facultyname_4',validators = [Length(max=70)])
+    examsession = SelectField('examsession', coerce=int, choices=[(key, config.dict_examsessions[key]) for key in config.dict_examsessions.keys()])
+    def __init__(self, *args, **kwargs): #FormID is session_coursecode
+        Form.__init__(self, *args, **kwargs)
+    def validate(self):
+        if not Form.validate(self):
+            return False
+        else:
+            uniqueID = self.coursecode.data+'_'+str(self.examsession.data)
+            copos = CoPoMap.query.filter(CoPoMap.uniqueID == uniqueID).first()
+            if copos == None:
+                return True
+            else:
+                self.coursecode.errors.append("An entry for this course name for this exam session already exists.")
+                return False
+    def formtodata(self, copo):
+        copo.coursecode = self.coursecode.data
+        copo.coursename = self.coursename.data
+        copo.classname = config.dict_class[self.classname.data]
+        copo.facultyname_1 = self.facultyname_1.data
+        copo.facultyname_2 = self.facultyname_2.data
+        copo.facultyname_3 = self.facultyname_3.data
+        copo.facultyname_4 = self.facultyname_4.data
+        copo.examsession = self.examsession.data

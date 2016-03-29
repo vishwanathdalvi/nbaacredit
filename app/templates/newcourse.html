@@ -1,0 +1,47 @@
+<!-- extends base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <h1> New Course Form </h1>
+    {% if user.nickname == 'labuser' %}
+    <p>
+        Please fill in the form to add a new course.
+    </p> 
+     <form action="" method="post" name="newcourse" enctype=multipart/form-data> 
+    {{ form.hidden_tag() }}
+    <table>
+        <tr>
+            <td> Course Code: </td>
+            <td> <b>{{ form.coursecode }}</b> </td>
+        </tr>
+        <tr>
+            <td> Course Name: </td>
+            <td> {{ form.coursename }} </td>
+        </tr>
+
+        <tr>
+            <td> Class: </td>
+            <td> {{ form.classname }} </td>
+        </tr>
+
+        <tr>
+            <td> Faculty: </td>
+            <td> {{ form.facultyname_1 }} </td>
+            <td> {{ form.facultyname_2 }} </td>
+            <td> {{ form.facultyname_3 }} </td>
+            <td> {{ form.facultyname_4 }} </td>
+        </tr>
+        <tr>
+            <td> Exam Session: </td>
+            <td> <b>{{ form.examsession }}</b> </td>
+        </tr>   
+        <tr>
+            <td> <input type="submit" name="btn" value="Save Course"> </td> 
+        </tr>
+
+    </table>
+    </form>
+    {%  else %}
+    <p> You must be logged in as labuser to add new course. </p>
+    {% endif %}
+
+{% endblock %}

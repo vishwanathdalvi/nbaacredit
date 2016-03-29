@@ -32,6 +32,12 @@ dict_Klevels = {0:'K1',
                 3:'K4',
                 4:'K5',
                 5:'K6'}
+                
+dict_class = {0: 'FYCE', 
+              1: 'SYCE',
+              2: 'TYCE',
+              3: 'FNCE',
+              4: 'MCHE'}
 
 def get_examsession(eid):
     return dict_examsessions[int(eid)]
